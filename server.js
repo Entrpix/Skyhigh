@@ -1,8 +1,10 @@
+import { libcurlPath } from "@mercuryworkshop/libcurl-transport";
 import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
 import { epoxyPath } from "@mercuryworkshop/epoxy-transport";
 import fastifyStatic from "@fastify/static";
 import { fileURLToPath } from "node:url";
 import { createServer } from "http";
+import wisp from "wisp-server-node";
 import { join } from "node:path";
 import Fastify from "fastify";
 
@@ -12,8 +14,8 @@ const fastify = Fastify({
 			.on("request", (req, res) => {
 					handler(req, res);
 			})
-			.on("upgrade", (socket) => {
-					socket.end();
+			.on("upgrade", (req, socket, head) => {
+					wisp.routeRequest(req, socket, head);
 			});
 	},
 });
@@ -41,6 +43,12 @@ fastify.register(fastifyStatic, {
 	decorateReply: false,
 });
 
+fastify.register(fastifyStatic, {
+	root: libcurlPath,
+	prefix: "/libcurl/",
+	decorateReply: false,
+});
+
 fastify.listen({
-	port: 8000
+	port: 5000
 });
