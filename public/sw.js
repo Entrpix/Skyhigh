@@ -1,4 +1,8 @@
-importScripts('/sky/skyhigh.worker.js');
+importScripts(
+    '/sky/skyhigh.worker.js',
+    '/sky/skyhigh.config.js',
+
+);
 
 const skyhigh = new SkyhighServiceWorker();
 

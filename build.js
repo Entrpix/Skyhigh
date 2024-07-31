@@ -3,6 +3,7 @@ import { build } from "esbuild";
 await build({
     entryPoints: {
         worker: "./src/worker.js",
+        config: "./src/config.js"
     },
     entryNames: "skyhigh.[name]",
     outdir: "./dist",

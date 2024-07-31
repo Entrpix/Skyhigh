@@ -1,7 +1,7 @@
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
         .register('/sw.js', {
-            scope: '/sh/',
+            scope: $skyhigh.config.prefix,
         })
         .then(reg => {
             reg.update();

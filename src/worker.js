@@ -1,9 +1,13 @@
 import { BareClient } from '@mercuryworkshop/bare-mux';
-
 self.SkyhighServiceWorker = class SkyhighServiceWorker {
-    constructor() {
+    constructor(config = self.$skyhigh.config) {
         this.client = new BareClient();
-        this.prefix = '/sh/';
+
+        if (!config.prefix) {
+            config.prefix = '/sh/';
+        }
+
+        this.prefix = config.prefix;
     }
 
     route({ request }) {
@@ -14,8 +18,8 @@ self.SkyhighServiceWorker = class SkyhighServiceWorker {
         }
     }
 
-    async fetch(event) {
-        const url = new URL(event.request.url);
+    async fetch({ request }) {
+        const url = new URL(request.url);
         const targetUrl = decodeURIComponent(url.pathname.replace(this.prefix, ''));
 
         try {
