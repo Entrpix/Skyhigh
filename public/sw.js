@@ -1,12 +1,14 @@
-importScripts('/skyhigh/skyhigh.config.js');
-importScripts(__skyhigh$config.worker || '/skyhigh/skyhigh.worker.js');
+importScripts('/sky/skyhigh.worker.js');
 
-self.addEventListener("fetch", event => {
-    event.respondWith((async () => {
-        if (self.skyhigh.route(event)) {
-            return await self.skyhigh.fetch(event);
-        } else {
-            return await fetch(event.request);
-        }
-    })());
+const skyhigh = new SkyhighServiceWorker();
+
+async function handleRequest(event) {
+    if (skyhigh.route(event)) {
+        return skyhigh.fetch(event);
+    }
+    return fetch(event.request);
+}
+
+self.addEventListener('fetch', event => {
+    event.respondWith(handleRequest(event));
 });

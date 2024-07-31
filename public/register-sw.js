@@ -1,9 +1,22 @@
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(registration => {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        }, error => {
-            console.log('ServiceWorker registration failed: ', error);
+    navigator.serviceWorker
+        .register('./sw.js', {
+            scope: '/sh/',
+        })
+        .then(reg => {
+            reg.update();
+        })
+        .catch(error => {
+            console.error('Service Worker registration failed:', error);
         });
-    });
 }
+
+
+const connection = new BareMux.BareMuxConnection('/baremux/worker.js');
+connection.setTransport('/epoxy/index.mjs', [{ wisp: 'wss://wisp.mercurywork.shop/' }]);
+
+localStorage.setItem('url', 'https://example.com');
+const url = `${location.origin}/sh/${localStorage.getItem('url')}`;
+
+const iframe = document.querySelector('iframe');
+iframe.src = url;

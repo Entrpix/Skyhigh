@@ -11,8 +11,10 @@
   "author": "Scaratek",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@tomphttp/bare-client": "2.2.0-alpha",
+    "@fastify/static": "^7.0.4",
+    "@mercuryworkshop/bare-mux": "^2.0.4",
+    "@mercuryworkshop/epoxy-transport": "^2.1.5",
     "esbuild": "^0.21.5",
-    "express": "^4.19.2"
+    "fastify": "^4.28.1"
   }
 }

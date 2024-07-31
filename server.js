@@ -1,14 +1,46 @@
-import express from 'express';
-import path from 'path';
+import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
+import { epoxyPath } from "@mercuryworkshop/epoxy-transport";
+import fastifyStatic from "@fastify/static";
+import { fileURLToPath } from "node:url";
+import { createServer } from "http";
+import { join } from "node:path";
+import Fastify from "fastify";
 
-const app = express();
-
-app.use(express.static('public'));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve('public', 'index.html'));
+const fastify = Fastify({
+	serverFactory: (handler) => {
+		return createServer()
+			.on("request", (req, res) => {
+					handler(req, res);
+			})
+			.on("upgrade", (socket) => {
+					socket.end();
+			});
+	},
 });
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+fastify.register(fastifyStatic, {
+	root: join(fileURLToPath(new URL(".", import.meta.url)), "./public"),
+	decorateReply: false,
+});
+
+fastify.register(fastifyStatic, {
+	root: join(fileURLToPath(new URL(".", import.meta.url)), "./dist"),
+	prefix: "/sky/",
+	decorateReply: false,
+});
+
+fastify.register(fastifyStatic, {
+	root: baremuxPath,
+	prefix: "/baremux/",
+	decorateReply: false,
+});
+
+fastify.register(fastifyStatic, {
+	root: epoxyPath,
+	prefix: "/epoxy/",
+	decorateReply: false,
+});
+
+fastify.listen({
+	port: 8000
 });
