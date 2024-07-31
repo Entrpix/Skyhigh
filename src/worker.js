@@ -20,8 +20,7 @@ self.SkyhighServiceWorker = class SkyhighServiceWorker {
 
         try {
             const response = await this.client.fetch(targetUrl);
-            return response;
-            
+            return response;    
         } catch (error) {
             console.error('Fetch failed:', error);
             return new Response('Error fetching the URL', { status: 500 });
