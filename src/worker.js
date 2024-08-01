@@ -19,15 +19,17 @@ self.SkyhighServiceWorker = class SkyhighServiceWorker {
     }
 
     async fetch({ request }) {
-        const url = new URL(request.url);
-        const targetUrl = decodeURIComponent(url.pathname.replace(this.prefix, ''));
+        const { decodeUrl } = self.$skyhigh.shared.url;
+        const decodedUrl = decodeUrl(request.url);
+        const url = new URL(decodedUrl);
 
         try {
-            const response = await this.client.fetch(targetUrl);
+            const response = await this.client.fetch(url);
             return response;
         } catch (error) {
             console.error('Fetch failed:', error);
             return new Response('Error fetching the URL', { status: 500 });
         }
     }
+
 };
