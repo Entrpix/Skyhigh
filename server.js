@@ -11,11 +11,11 @@ const app = express();
 
 app.use(express.static(join(fileURLToPath(new URL(".", import.meta.url)), "./public")));
 
-app.use("/sky", express.static(join(fileURLToPath(new URL(".", import.meta.url)), "./dist")));
+app.use("/sky/", express.static(join(fileURLToPath(new URL(".", import.meta.url)), "./dist")));
 
-app.use("/baremux", express.static(baremuxPath));
-app.use("/epoxy", express.static(epoxyPath));
-app.use("/libcurl", express.static(libcurlPath));
+app.use("/baremux/", express.static(baremuxPath));
+app.use("/epoxy/", express.static(epoxyPath));
+app.use("/libcurl/", express.static(libcurlPath));
 
 const server = createServer(app);
 server.on("upgrade", (req, socket, head) => {
