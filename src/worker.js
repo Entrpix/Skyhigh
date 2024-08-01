@@ -19,7 +19,7 @@ self.SkyhighServiceWorker = class SkyhighServiceWorker {
     }
 
     async fetch({ request }) {
-        const { decodeUrl } = self.$skyhigh.shared.url;
+        const { decodeUrl } = self.$skyhigh.url;
         const decodedUrl = decodeUrl(request.url);
         const url = new URL(decodedUrl);
 

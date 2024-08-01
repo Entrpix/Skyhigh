@@ -1,13 +1,10 @@
-import { encodeUrl } from "./utils/encodeUrl";
-import { decodeUrl } from "./utils/decodeUrl";
+import { encodeUrl, decodeUrl } from "./utils/url";
 
 if (!self.$skyhigh) {
 	self.$skyhigh = {};
 }
 
-self.$skyhigh.shared = {
-    url: {
+self.$skyhigh.url = {
         encodeUrl,
         decodeUrl
-    }
 }
