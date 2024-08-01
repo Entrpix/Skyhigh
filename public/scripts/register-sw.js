@@ -20,7 +20,7 @@ const url = localStorage.getItem('url');
 const frame = document.getElementById('webproxy');
 
 if (!url) {
-    localStorage.setItem('url', 'https://example.com');
+    localStorage.setItem('url', btoa('https://example.com'));
 }
 
 if (!transport) {
