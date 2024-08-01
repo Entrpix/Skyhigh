@@ -1,5 +1,5 @@
 # Skyhigh
-TompHTTP Webproxy
+Yet-Another Interception Webproxy
 
 ## Setup
 ```sh
