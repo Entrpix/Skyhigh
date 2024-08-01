@@ -28,28 +28,29 @@ const urlHeaders = [
     "referer",
 ];
 
-export function rewriteHeaders(headers, origin) {
-    const rewritenHeaders = {};
+export function rewriteHeaders(headers) {
+	const rewritenHeaders = {};
 
-    for (const header in raw) {
-        rewritenHeaders[header.toLowerCase()] = headers[header]
-    }
+	for (const key in headers) {
+		rewritenHeaders[key.toLowerCase()] = headers[key];
+	}
 
-    cspHeaders.forEach(csp => {
-        delete rewritenHeaders[csp]
-    });
+	cspHeaders.forEach((csp) => {
+		delete rewritenHeaders[csp];
+	});
 
-    urlHeaders.forEach(url => {
-        if (rewriteHeaders[url]) {
-            rewriteHeaders[url] = encodeUrl(rewriteHeaders[url], origin);
-        }
-    });
+	urlHeaders.forEach((url) => {
+		if (rewritenHeaders[url])
+			rewritenHeaders[url] = encodeUrl(rewritenHeaders[url]);
+	});
 
-    if (rewritenHeaders['link']) {
+	if (rewritenHeaders["link"]) {
         const regex = /<(.*?)>/gi;
+        
+		rewritenHeaders["link"] = rewritenHeaders["link"].replace(regex, (match) =>
+			encodeUrl(match, origin)
+		);
+	}
 
-        rewriteHeaders['link'] = rewriteHeaders['link'].replace(regex, (match) => {
-            encodeUrl(match);
-        })
-    }
-};
+	return rewritenHeaders;
+}

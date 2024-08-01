@@ -3,6 +3,7 @@ import { BareClient } from '@mercuryworkshop/bare-mux';
 if (typeof self.$skyhigh === "undefined") {
 	self.$skyhigh = {};
 }
+
 self.SkyhighServiceWorker = class SkyhighServiceWorker {
     constructor(config = self.$skyhigh.config) {
 
@@ -16,11 +17,7 @@ self.SkyhighServiceWorker = class SkyhighServiceWorker {
     }
 
     route({ request }) {
-        if (request.url.startsWith(location.origin + this.prefix)) {
-            return true;
-        } else {
-            return false;
-        }
+        return request.url.startsWith(location.origin + this.prefix);
     }
 
     async fetch({ request }) {
@@ -30,44 +27,48 @@ self.SkyhighServiceWorker = class SkyhighServiceWorker {
         const decodedUrl = decodeUrl(request.url);
         const url = new URL(decodedUrl);
 
+        console.log('Decoded URL: ' + decodedUrl);
+        console.log('Fetching URL: ' + url);
+
         try {
             const response = await this.client.fetch(url, {
                 method: request.method,
                 headers: request.headers,
                 body: request.body,
                 mode: request.mode === "cors" ? request.mode : "same-origin",
-				cache: request.cache,
-				redirect: request.redirect,
+                cache: request.cache,
+                redirect: request.redirect,
                 duplex: "half"
             });
 
-            const rewritenHeaders = rewriteHeaders(response.headers, url);
-            let rewritenBody;
+            console.log('Vanilla Response: ', response);
 
-            for (let header in rewritenHeaders) {
-				if (rewritenHeaders[header] instanceof Array)
-					rewritenHeaders[header] = rewritenHeaders[header][0];
-			};
+            const rewrittenHeaders = rewriteHeaders(response.headers, url);
+            let rewrittenBody;
 
-            if (request.body) {
-                switch (request.destenation) {
-                    case "style":
-                        rewritenBody = rewriteCss(await response.text(), url);
-                        break;
-                    default:
-                        rewritenBody = response.body;
-                        break;
-                }
+            console.log('Rewritten Headers: ', rewrittenHeaders);
+
+            switch (request.destination) {
+                case "style":
+                    rewrittenBody = rewriteCss(await response.text(), url);
+                    console.log('Rewritten CSS: ', rewrittenBody);
+                    break;
+                default:
+                    rewrittenBody = response.body;
+                    console.log('Rewritten Body: ', rewrittenBody);
+                    break;
             }
 
-            return new Response(responseBody, {
-				headers: responseHeaders,
-				status: response.status,
-				statusText: response.statusText,
-			});
+            console.log('Final Rewritten Body: ', rewrittenBody);
+
+            return new Response(rewrittenBody, {
+                headers: rewrittenHeaders,
+                status: response.status,
+                statusText: response.statusText,
+            });
         } catch (error) {
             console.error(error);
-            return render(error, decodeUrl(request.url));
+            return render(error, decodedUrl);
         }
     }
 };
@@ -76,14 +77,12 @@ function template(trace, url) {
     const script = `
         errorTrace.value = ${JSON.stringify(trace)};
         fetchedURL.textContent = ${JSON.stringify(url)};
-        for (const node of document.querySelectorAll("#hostname")) node.textContent = ${JSON.stringify(
-					location.hostname
-				)};
+        for (const node of document.querySelectorAll("#hostname")) node.textContent = ${JSON.stringify(location.hostname)};
         reload.addEventListener("click", () => location.reload());
         version.textContent = "0.0.1";
     `;
 
-	return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
         <html>
         <head>
         <meta charset="utf-8" />
@@ -103,10 +102,10 @@ function template(trace, url) {
         <li>Checking your internet connection</li>
         <li>Verifying you entered the correct address</li>
         <li>Clearing the site data</li>
-        <li>Contacting <b id="hostname"></b>"s administrator</li>
-        <li>Verify the server isn"t censored</li>
+        <li>Contacting <b id="hostname"></b>'s administrator</li>
+        <li>Verify the server isn't censored</li>
         </ul>
-        <p>If you"re the administrator of <b id="hostname"></b>, try:</p>
+        <p>If you're the administrator of <b id="hostname"></b>, try:</p>
         <ul>
         <li>Restarting your server</li>
         <li>Updating Skyhigh</li>
@@ -115,24 +114,22 @@ function template(trace, url) {
         <button id="reload">Reload</button>
         <hr />
         <p><i>Skyhigh v<span id="version"></span></i></p>
-        <script src="${
-					"data:application/javascript," + encodeURIComponent(script)
-				}"></script>
+        <script src="${"data:application/javascript," + encodeURIComponent(script)}"></script>
         </body>
         </html>
-        `;
+    `;
 }
 
 function render(error, url) {
-	const headers = {
-		"content-type": "text/html",
-	};
-	if (crossOriginIsolated) {
-		headers["Cross-Origin-Embedder-Policy"] = "require-corp";
-	}
+    const headers = {
+        "content-type": "text/html",
+    };
+    if (crossOriginIsolated) {
+        headers["Cross-Origin-Embedder-Policy"] = "require-corp";
+    }
 
-	return new Response(template(String(error), url), {
-		status: 500,
-		headers: headers,
-	});
+    return new Response(template(String(error), url), {
+        status: 500,
+        headers: headers,
+    });
 }
