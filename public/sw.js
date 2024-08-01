@@ -1,7 +1,7 @@
 importScripts(
     '/sky/skyhigh.codecs.js',
-    '/sky/skyhigh.shared.js',
     '/sky/skyhigh.config.js',
+    '/sky/skyhigh.shared.js',
     '/sky/skyhigh.worker.js'
 
 );

@@ -1,3 +1,7 @@
+if (typeof self.$skyhigh === "undefined") {
+	self.$skyhigh = {};
+}
+
 const base64 = {
     encode: (str) => {
         return btoa(encodeURIComponent(str));
@@ -29,9 +33,6 @@ const none = {
     }
 };
 
-if (typeof self.$skyhigh === "undefined") {
-	self.$skyhigh = {};
-}
 self.$skyhigh.codecs = {
 	none,
 	plain,

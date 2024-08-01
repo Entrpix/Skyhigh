@@ -22,6 +22,6 @@ server.on("upgrade", (req, socket, head) => {
 	wisp.routeRequest(req, socket, head);
 });
 
-server.listen(3000, () => {
-	console.log("Server listening on port 3000");
+server.listen(7000, () => {
+	console.log("Server listening on port 7000");
 });
